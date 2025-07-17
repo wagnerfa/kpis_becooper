@@ -8,7 +8,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 from sqlalchemy import text
 from . import db
-from .models import TrResultado
+from .models import *
 
 bp = Blueprint('main', __name__)
 ALLOWED_EXTENSIONS = {'csv'}
@@ -21,7 +21,12 @@ def ping():
     db.session.execute(text('SELECT 1'))
     return 'pong', 200
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/')
+def index():
+
+    return render_template('index.html')
+
+@bp.route('/tr_resultado', methods=['GET', 'POST'])
 def upload_tr_resultado():
     if request.method == 'POST':
         f = request.files.get('csv_file')
@@ -82,3 +87,86 @@ def upload_tr_resultado():
         .all()
     )
     return render_template('upload.html', resultados=ultimos)
+
+
+@bp.route('/tr_balancete', methods=['GET', 'POST'])
+def upload_tr_balancete():
+    if request.method == 'POST':
+        f = request.files.get('csv_file')
+        centro = request.form.get('centro_custo', '').strip()
+        if not f or not allowed_file(f.filename):
+            flash('Selecione um arquivo .csv válido.', 'danger')
+            return redirect(request.url)
+
+        upload_dir = os.path.join(current_app.instance_path, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        filename = secure_filename(f.filename)
+        path = os.path.join(upload_dir, filename)
+        f.save(path)
+
+        registros = []
+        errors = []
+
+        def conv_num(s):
+
+            s = s.strip().replace('.', '').replace(',', '.')
+            return Decimal(s) if s else Decimal('0')
+
+        with open(path, newline='', encoding='latin1') as fp:
+            reader = csv.reader(fp, delimiter=';')
+            for i, row in enumerate(reader, start=1):
+                if len(row) != 13:
+                    errors.append(f"Linha {i}: número de colunas inválido ({len(row)}), esperado 13")
+                    continue
+                try:
+                    conta      = row[0].strip()
+                    bacen      = row[1].strip()
+                    titulo     = row[2].strip()
+                    saldo_an   = conv_num(row[3])
+                    saldo_at   = conv_num(row[4])
+                    debito     = conv_num(row[5])
+                    credito    = conv_num(row[6])
+                    n_credito  = row[7].strip()
+                    n_debito   = row[8].strip()
+                    sate90     = row[9].strip()
+                    sapos90    = row[10].strip()
+                    titulo_rel = row[11].strip()
+                    mes_ano    = row[12].strip()
+
+                    reg = TrBalancete(
+                        Tr_BalanceteConta    = conta,
+                        Tr_BalanceteBacen    = bacen,
+                        Tr_BalanceteTitulo   = titulo,
+                        Tr_BalanceteSaldoAn  = saldo_an,
+                        Tr_BalanceteSaldoAt  = saldo_at,
+                        Tr_BalanceteDebito   = debito,
+                        Tr_BalanceteCredito  = credito,
+                        Tr_BalanceteNCredito = n_credito,
+                        Tr_BalanceteNDebito  = n_debito,
+                        Tr_BalanceteSate90   = sate90,
+                        Tr_BalanceteSapos90  = sapos90,
+                        Tr_BalanceteTituloRel= titulo_rel,
+                        Tr_BalanceteMesAno   = mes_ano,
+                        Tr_BalanceteCentroC  = centro,
+                    )
+                    registros.append(reg)
+                except Exception as e:
+                    errors.append(f"Linha {i}: {e}")
+
+        if errors:
+            flash('Erros no CSV:<br>' + '<br>'.join(errors), 'danger')
+        else:
+            db.session.bulk_save_objects(registros)
+            db.session.commit()
+            flash(f'{len(registros)} registros importados com sucesso!', 'success')
+
+        return redirect(url_for('main.upload_tr_balancete'))
+
+
+    ultimos = (
+        TrBalancete.query
+        .order_by(TrBalancete.Tr_BalanceteId.desc())
+        .limit(50)
+        .all()
+    )
+    return render_template('upload_balancete.html', balancetes=ultimos)

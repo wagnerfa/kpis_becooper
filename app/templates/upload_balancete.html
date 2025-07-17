@@ -1,0 +1,30 @@
+<form method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label>Arquivo CSV</label>
+    <input type="file" name="csv_file" accept=".csv" required>
+  </div>
+
+  <button type="submit">Importar Balancete</button>
+</form>
+
+{% if balancetes %}
+  <h2>Últimos lançamentos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Conta</th><th>Saldo Anterior</th><th>Saldo Atual</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in balancetes %}
+      <tr>
+        <td>{{ b.Tr_BalanceteId }}</td>
+        <td>{{ b.Tr_BalanceteConta }}</td>
+        <td>{{ b.Tr_BalanceteSaldoAn }}</td>
+        <td>{{ b.Tr_BalanceteSaldoAt }}</td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
