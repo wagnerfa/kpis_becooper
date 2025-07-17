@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Importar Tr_Resultado</h2>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit">Enviar CSV</button>
+  </form>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for category, msg in messages %}
+          <li class="flash {{ category }}">{{ msg|safe }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if resultados %}
+    <h3>Últimos 50 Registros</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Ano</th><th>Mês</th><th>Conta</th>
+          <th>Orçado</th><th>Realizado</th>
+          <th>Real Ant x Atu</th><th>Real x Orc</th><th>Ano Anterior</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in resultados %}
+        <tr>
+          <td>{{ r.Tr_ResultadoID }}</td>
+          <td>{{ r.Tr_ResultadoAno }}</td>
+          <td>{{ r.Tr_ResultadoMes }}</td>
+          <td>{{ r.Tr_ResultadoConta }}</td>
+          <td>{{ r.Tr_ResultadoOrcado }}</td>
+          <td>{{ r.Tr_ResultadoRealizado }}</td>
+          <td>{{ r.Tr_ResultadoRealAntxAtu }}</td>
+          <td>{{ r.Tr_ResultadoRealxOrc }}</td>
+          <td>{{ r.Tr_ResultadoAnoAnterior }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</body>
+</html>
