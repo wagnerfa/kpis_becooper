@@ -26,6 +26,7 @@ def index():
 
     return render_template('index.html')
 
+
 @bp.route('/tr_resultado', methods=['GET', 'POST'])
 def upload_tr_resultado():
     if request.method == 'POST':
@@ -45,12 +46,12 @@ def upload_tr_resultado():
         with open(path, newline='', encoding='latin1') as fp:
             reader = csv.reader(fp, delimiter=';')
             for i, row in enumerate(reader, start=1):
-                # cada linha deve ter exatamente 6 colunas
+
                 if len(row) != 6:
                     errors.append(f"Linha {i}: número de colunas inválido ({len(row)})")
                     continue
                 try:
-                    # mapeia colunas fixas por posição
+
                     desc  = row[0].strip()
                     v1 = row[1].strip().replace(',', '.')
                     v2 = row[2].strip().replace(',', '.')
@@ -93,11 +94,11 @@ def upload_tr_resultado():
 def upload_tr_balancete():
     if request.method == 'POST':
         f = request.files.get('csv_file')
-        centro = request.form.get('centro_custo', '').strip()
         if not f or not allowed_file(f.filename):
             flash('Selecione um arquivo .csv válido.', 'danger')
             return redirect(request.url)
 
+        # salva o CSV
         upload_dir = os.path.join(current_app.instance_path, 'uploads')
         os.makedirs(upload_dir, exist_ok=True)
         filename = secure_filename(f.filename)
@@ -105,19 +106,20 @@ def upload_tr_balancete():
         f.save(path)
 
         registros = []
-        errors = []
+        errors    = []
 
         def conv_num(s):
-
             s = s.strip().replace('.', '').replace(',', '.')
             return Decimal(s) if s else Decimal('0')
 
         with open(path, newline='', encoding='latin1') as fp:
             reader = csv.reader(fp, delimiter=';')
             for i, row in enumerate(reader, start=1):
-                if len(row) != 13:
-                    errors.append(f"Linha {i}: número de colunas inválido ({len(row)}), esperado 13")
+                # aceita 13 ou 14 colunas
+                if len(row) not in (13, 14):
+                    errors.append(f"Linha {i}: colunas inválidas ({len(row)}) – esperava 13 ou 14")
                     continue
+
                 try:
                     conta      = row[0].strip()
                     bacen      = row[1].strip()
@@ -133,23 +135,30 @@ def upload_tr_balancete():
                     titulo_rel = row[11].strip()
                     mes_ano    = row[12].strip()
 
+                    # 14ª coluna opcional
+                    if len(row) == 14:
+                        centro = row[13].strip() or None
+                    else:
+                        centro = 'Null'
+
                     reg = TrBalancete(
-                        Tr_BalanceteConta    = conta,
-                        Tr_BalanceteBacen    = bacen,
-                        Tr_BalanceteTitulo   = titulo,
-                        Tr_BalanceteSaldoAn  = saldo_an,
-                        Tr_BalanceteSaldoAt  = saldo_at,
-                        Tr_BalanceteDebito   = debito,
-                        Tr_BalanceteCredito  = credito,
-                        Tr_BalanceteNCredito = n_credito,
-                        Tr_BalanceteNDebito  = n_debito,
-                        Tr_BalanceteSate90   = sate90,
-                        Tr_BalanceteSapos90  = sapos90,
-                        Tr_BalanceteTituloRel= titulo_rel,
-                        Tr_BalanceteMesAno   = mes_ano,
-                        Tr_BalanceteCentroC  = centro,
+                        Tr_BalanceteConta      = conta,
+                        Tr_BalanceteBacen      = bacen,
+                        Tr_BalanceteTitulo     = titulo,
+                        Tr_BalanceteSaldoAn    = saldo_an,
+                        Tr_BalanceteSaldoAt    = saldo_at,
+                        Tr_BalanceteDebito     = debito,
+                        Tr_BalanceteCredito    = credito,
+                        Tr_BalanceteNCredito   = n_credito,
+                        Tr_BalanceteNDebito    = n_debito,
+                        Tr_BalanceteSate90     = sate90,
+                        Tr_BalanceteSapos90    = sapos90,
+                        Tr_BalanceteTituloRel  = titulo_rel,
+                        Tr_BalanceteMesAno     = mes_ano,
+                        Tr_BalanceteCentroCusto= centro,
                     )
                     registros.append(reg)
+
                 except Exception as e:
                     errors.append(f"Linha {i}: {e}")
 
@@ -162,7 +171,6 @@ def upload_tr_balancete():
 
         return redirect(url_for('main.upload_tr_balancete'))
 
-
     ultimos = (
         TrBalancete.query
         .order_by(TrBalancete.Tr_BalanceteId.desc())
@@ -170,3 +178,4 @@ def upload_tr_balancete():
         .all()
     )
     return render_template('upload_balancete.html', balancetes=ultimos)
+

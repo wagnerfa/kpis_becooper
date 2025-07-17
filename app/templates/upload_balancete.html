@@ -1,30 +1,59 @@
-<form method="post" enctype="multipart/form-data">
-  <div class="form-group">
-    <label>Arquivo CSV</label>
-    <input type="file" name="csv_file" accept=".csv" required>
-  </div>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Importar Balancete</title>
+</head>
+<body class="p-4">
 
-  <button type="submit">Importar Balancete</button>
-</form>
-
-{% if balancetes %}
-  <h2>Últimos lançamentos</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th><th>Conta</th><th>Saldo Anterior</th><th>Saldo Atual</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for b in balancetes %}
-      <tr>
-        <td>{{ b.Tr_BalanceteId }}</td>
-        <td>{{ b.Tr_BalanceteConta }}</td>
-        <td>{{ b.Tr_BalanceteSaldoAn }}</td>
-        <td>{{ b.Tr_BalanceteSaldoAt }}</td>
-
-      </tr>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      {% for cat, m in msgs %}
+        <div class="alert alert-{{ cat }}">{{ m|safe }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-{% endif %}
+    {% endif %}
+  {% endwith %}
+
+  <h1>Importar Balancete</h1>
+  <form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="csv_file" class="form-label">Arquivo Balancete (.csv)</label>
+      <input type="file"
+             name="csv_file"
+             id="csv_file"
+             class="form-control"
+             accept=".csv"
+             required>
+    </div>
+    <button type="submit" class="btn btn-primary">Importar</button>
+  </form>
+
+  <hr>
+
+  <h2>Últimos Balancetes</h2>
+  {% if balancetes %}
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          {% for col in balancetes[0].__table__.columns %}
+            <th>{{ col.name }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in balancetes %}
+          <tr>
+            {% for col in b.__table__.columns %}
+              {# mostra vazio em vez de “None” #}
+              <td>{{ b|attr(col.name) or '' }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Nenhum registro importado ainda.</p>
+  {% endif %}
+
+</body>
+</html>
