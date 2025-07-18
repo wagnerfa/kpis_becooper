@@ -1,0 +1,129 @@
+<!-- templates/upload_saldos.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload de Saldos</title>
+</head>
+<body>
+    <h1>Importar Saldos</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="csv_file">Arquivo CSV (sem cabeçalho):</label>
+        <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    
+  {% with mensagens = get_flashed_messages(with_categories=true) %}
+  {% if mensagens %}
+  <ul>
+    {% for categoria, msg in mensagens %}
+    <li><strong>{{ categoria }}:</strong> {{ msg|safe }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+    <h2>Últimos 50 registros</h2>
+    <table >
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DataBase</th>
+                <th>Contrato</th>
+                <th>Taxa</th>
+                <th>Conta</th>
+                <th>CodLinha</th>
+                <th>DtEmissao</th>
+                <th>NumParc</th>
+                <th>ParcGer</th>
+                <th>VencFim</th>
+                <th>PgtoFim</th>
+                <th>Saldo</th>
+                <th>Restante</th>
+                <th>Situação</th>
+                <th>NvAtual</th>
+                <th>DiaFixo</th>
+                <th>Valor</th>
+                <th>TipoVenc</th>
+                <th>DiaBase</th>
+                <th>ValorContábil</th>
+                <th>Nome</th>
+                <th>CodUnid</th>
+                <th>SitUnid</th>
+                <th>NomeUnid</th>
+                <th>CodCart</th>
+                <th>VencIni</th>
+                <th>NomeTaxa</th>
+                <th>NomeLinha</th>
+                <th>Juros</th>
+                <th>NomeCart</th>
+                <th>RAA</th>
+                <th>Cidade</th>
+                <th>CodCid</th>
+                <th>CodAgencia</th>
+                <th>Agencia</th>
+                <th>Doc</th>
+                <th>RAA Futuras</th>
+                <th>CodBanco</th>
+                <th>NomeSetor</th>
+                <th>IOF</th>
+                <th>Provisão</th>
+                <th>MatSet</th>
+                <th>CodSet</th>
+                <th>AnoMes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for saldo in saldos %}
+            <tr>
+                <td>{{ saldo.Tr_SaldosId }}</td>
+                <td>{{ saldo.Tr_SaldosDataBase }}</td>
+                <td>{{ saldo.Tr_SaldosContrato }}</td>
+                <td>{{ saldo.Tr_SaldosTaxa }}</td>
+                <td>{{ saldo.Tr_SaldosConta }}</td>
+                <td>{{ saldo.Tr_SaldosCodLinha }}</td>
+                <td>{{ saldo.Tr_SaldosDtEmissao }}</td>
+                <td>{{ saldo.Tr_SaldosNumParc }}</td>
+                <td>{{ saldo.Tr_SaldosParcGer }}</td>
+                <td>{{ saldo.Tr_SaldosVencFim }}</td>
+                <td>{{ saldo.Tr_SaldosPgtoFim }}</td>
+                <td>{{ saldo.Tr_SaldosSaldo }}</td>
+                <td>{{ saldo.Tr_SaldosRestantes }}</td>
+                <td>{{ saldo.Tr_SaldosSituacao }}</td>
+                <td>{{ saldo.Tr_SaldosNvAtual }}</td>
+                <td>{{ saldo.Tr_SaldosDiaFixo }}</td>
+                <td>{{ saldo.Tr_SaldosValor }}</td>
+                <td>{{ saldo.Tr_SaldosTipoVenc }}</td>
+                <td>{{ saldo.Tr_SaldosDiaBase }}</td>
+                <td>{{ saldo.Tr_SaldosValorContabil }}</td>
+                <td>{{ saldo.Tr_SaldosNome }}</td>
+                <td>{{ saldo.Tr_SaldosCodUnid }}</td>
+                <td>{{ saldo.Tr_SaldosSit }}</td>
+                <td>{{ saldo.Tr_SaldosNomeUnid }}</td>
+                <td>{{ saldo.Tr_SaldosCodCart }}</td>
+                <td>{{ saldo.Tr_SaldosVencIni }}</td>
+                <td>{{ saldo.Tr_SaldosNomeTaxa }}</td>
+                <td>{{ saldo.Tr_SaldosNomeLinha }}</td>
+                <td>{{ saldo.Tr_SaldosJuros }}</td>
+                <td>{{ saldo.Tr_SaldosNomeCart }}</td>
+                <td>{{ saldo.Tr_SaldosRaa }}</td>
+                <td>{{ saldo.Tr_SaldosCidade }}</td>
+                <td>{{ saldo.Tr_SaldosCodCid }}</td>
+                <td>{{ saldo.Tr_SaldosCodAgencia }}</td>
+                <td>{{ saldo.Tr_SaldosAgencia }}</td>
+                <td>{{ saldo.Tr_SaldosDoc }}</td>
+                <td>{{ saldo.Tr_SaldosRaaFuturas }}</td>
+                <td>{{ saldo.Tr_SaldosCodBanco }}</td>
+                <td>{{ saldo.Tr_SaldosNomeSetor }}</td>
+                <td>{{ saldo.Tr_SaldosIof }}</td>
+                <td>{{ saldo.Tr_SaldosProvisao }}</td>
+                <td>{{ saldo.Tr_SaldosMatSet }}</td>
+                <td>{{ saldo.Tr_SaldosCodSet }}</td>
+                <td>{{ saldo.Tr_SaldosAnoMes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

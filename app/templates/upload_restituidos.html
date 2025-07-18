@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Upload Tr_Restituidos</title>
+</head>
+
+<body>
+  <h1>Upload de CSV – Tr_Restituidos</h1>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="csv_file" accept=".csv">
+    <button type="submit">Enviar</button>
+  </form>
+
+  {% with mensagens = get_flashed_messages(with_categories=true) %}
+  {% if mensagens %}
+  <ul>
+    {% for categoria, msg in mensagens %}
+    <li><strong>{{ categoria }}:</strong> {{ msg|safe }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+
+  {% if restituidos %}
+  <h2>Últimos 50 registros</h2>
+  <table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+      <th>ID</th>
+      <th>Conta</th>
+      <th>Nome</th>
+      <th>Lançamento</th>
+      <th>Data</th>
+      <th>Valor</th>
+      <th>CodUnid</th>
+    </tr>
+    {% for r in restituidos %}
+    <tr>
+      <td>{{ r.Tr_RestituidoId }}</td>
+      <td>{{ r.Tr_RestituidoConta }}</td>
+      <td>{{ r.Tr_RestituidoNome }}</td>
+      <td>{{ r.Tr_RestituidoLancamento }}</td>
+      <td>{{ r.Tr_RestituidoData }}</td>
+      <td>{{ r.Tr_RestituidoValor }}</td>
+      <td>{{ r.Tr_RestituidoCodUnid }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</body>
+
+</html>

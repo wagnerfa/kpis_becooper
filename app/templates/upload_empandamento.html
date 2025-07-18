@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Tr_Empandamento</title>
+</head>
+<body>
+    <h1>Upload Tr_Empandamento</h1>
+    
+    {% if messages %}
+        {% for category, message in messages %}
+            <div>{{ message|safe }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="ano">Ano:</label>
+            <input type="number" id="ano" name="ano" required min="2020" max="2030">
+        </div>
+        <br>
+        <div>
+            <label for="mes">Mês:</label>
+            <select id="mes" name="mes" required>
+                <option value="">Selecione o mês</option>
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Novembro">Novembro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="csv_file">Arquivo CSV:</label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+        </div>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+    
+    <h2>Últimos 50 registros</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ano</th>
+                <th>Mês</th>
+                <th>Contrato</th>
+                <th>Conta</th>
+                <th>Nome</th>
+                <th>Valor</th>
+                <th>Saldo</th>
+                <th>Cidade</th>
+                <th>Situação</th>
+                <th>Doc</th>
+                <th>Ano/Mês</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in empandamentos %}
+            <tr>
+                <td>{{ emp.Tr_EmpandamentoID }}</td>
+                <td>{{ emp.Tr_EmpandamentoAno }}</td>
+                <td>{{ emp.Tr_EmpandamentoMes }}</td>
+                <td>{{ emp.Tr_EmpandamentoContrato }}</td>
+                <td>{{ emp.Tr_EmpandamentoConta }}</td>
+                <td>{{ emp.Tr_EmpandamentoNome }}</td>
+                <td>{{ emp.Tr_EmpandamentoValor }}</td>
+                <td>{{ emp.Tr_EmpandamentoSaldo }}</td>
+                <td>{{ emp.Tr_EmpandamentoCidade }}</td>
+                <td>{{ emp.Tr_EmpandamentoSituacao }}</td>
+                <td>{{ emp.Tr_EmpandamentoDoc }}</td>
+                <td>{{ emp.Tr_EmpandamentoAnoMes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
